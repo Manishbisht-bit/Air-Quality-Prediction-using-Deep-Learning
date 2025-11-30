@@ -154,39 +154,9 @@ Below are the **must-have** plots for every model and a few project-level figure
 
 ---
 
-# Code snippets — how to save plots (use after each plotting cell)
 
-Use these snippets to save the figures you already plot in your notebook or script.
 
-```python
-# generic: save current figure with high resolution
-plt.savefig('figures/<filename>.png', dpi=300, bbox_inches='tight')
-```
 
-Examples (replace `model_name`):
-
-```python
-plt.figure(figsize=(8,5))
-plt.plot(history.history['loss'], label='Train Loss')
-plt.plot(history.history['val_loss'], label='Val Loss')
-plt.legend()
-plt.title('Train vs Val Loss')
-plt.savefig(f'figures/{model_name}_train_val_loss.png', dpi=300, bbox_inches='tight')
-plt.show()
-```
-
-```python
-plt.figure(figsize=(6,6))
-plt.scatter(y_test, y_pred, alpha=0.5)
-plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--')
-plt.xlabel('Actual')
-plt.ylabel('Predicted')
-plt.title('Actual vs Predicted')
-plt.savefig(f'figures/{model_name}_actual_vs_pred_scatter.png', dpi=300, bbox_inches='tight')
-plt.show()
-```
-
----
 
 # Suggested file structure
 
