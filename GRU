@@ -1,0 +1,51 @@
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import GRU, Dense, Dropout
+
+# Load integrated data
+data = pd.read_csv("Integrated_AQI_Data.csv")
+
+# Drop unnecessary columns
+data = data.dropna()
+
+# Features and target
+X = data.drop(['PM2.5'], axis=1)
+y = data['PM2.5']
+
+# One-hot encode categorical columns if any (e.g., Station)
+X = pd.get_dummies(X)
+
+# Normalize features
+scaler = MinMaxScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Reshape input for GRU: (samples, timesteps, features)
+# Here we assume no time sequence per station, so timestep=1
+X_scaled = X_scaled.reshape((X_scaled.shape[0], 1, X_scaled.shape[1]))
+
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+# Build GRU model
+model = Sequential([
+    GRU(64, input_shape=(X_train.shape[1], X_train.shape[2]), return_sequences=False),
+    Dropout(0.2),
+    Dense(32, activation='relu'),
+    Dense(1)  # Output PM2.5 value
+])
+
+model.compile(optimizer='adam', loss='mse', metrics=['mae'])
+
+# Train
+history = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=25, batch_size=64, verbose=1)
+
+# Evaluate
+loss, mae = model.evaluate(X_test, y_test)
+print(f"✅ Test MAE: {mae:.2f}")
+
+# Predict
+predictions = model.predict(X_test[:10])
+print("Sample predictions:", predictions.flatten())
