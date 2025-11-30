@@ -1,5 +1,5 @@
 # ==========================
-# 🚀 Transformer Encoder Model for PM2.5 Forecasting
+# Transformer Encoder Model for PM2.5 Forecasting
 # ==========================
 import numpy as np
 import pandas as pd
