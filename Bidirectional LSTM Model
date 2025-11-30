@@ -1,5 +1,5 @@
 # ==========================
-# 🚀 Bidirectional LSTM Model for PM2.5 Prediction
+# Bidirectional LSTM Model for PM2.5 Prediction
 # ==========================
 import numpy as np
 import pandas as pd
