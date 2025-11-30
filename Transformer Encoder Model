@@ -1,0 +1,87 @@
+# ==========================
+# 🚀 Transformer Encoder Model for PM2.5 Forecasting
+# ==========================
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+from tensorflow.keras import layers, Model, Input
+from tensorflow.keras.optimizers import Adam
+
+# --- Load merged dataset ---
+data = pd.read_csv("Integrated_AQI_Data.csv")   # Replace with your integrated filename
+data = data.drop(columns=['Unnamed: 0', 'Station'])  # Drop unnecessary columns
+
+# --- Scale features ---
+scaler = MinMaxScaler()
+scaled_data = scaler.fit_transform(data)
+scaled_df = pd.DataFrame(scaled_data, columns=data.columns)
+
+# --- Create sequences ---
+def create_sequences(df, target_col, n_steps=48):
+    X, y = [], []
+    for i in range(n_steps, len(df)):
+        X.append(df.iloc[i-n_steps:i].drop(columns=[target_col]).values)
+        y.append(df.iloc[i][target_col])
+    return np.array(X), np.array(y)
+
+n_steps = 48   # Use 48-hour context
+X, y = create_sequences(scaled_df, target_col='PM2.5', n_steps=n_steps)
+
+# --- Split data ---
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+
+# --- Transformer Encoder Block ---
+def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0.1):
+    # Self-attention
+    x = layers.MultiHeadAttention(num_heads=num_heads, key_dim=head_size, dropout=dropout)(inputs, inputs)
+    x = layers.Dropout(dropout)(x)
+    res = layers.Add()([x, inputs])
+    x = layers.LayerNormalization(epsilon=1e-6)(res)
+
+    # Feed-forward layer
+    fwd = layers.Dense(ff_dim, activation='relu')(x)
+    fwd = layers.Dense(inputs.shape[-1])(fwd)
+    x = layers.Add()([x, fwd])
+    x = layers.LayerNormalization(epsilon=1e-6)(x)
+    return x
+
+# --- Build Transformer model ---
+input_layer = Input(shape=(n_steps, X.shape[2]))
+
+x = transformer_encoder(input_layer, head_size=64, num_heads=4, ff_dim=128, dropout=0.1)
+x = transformer_encoder(x, head_size=64, num_heads=4, ff_dim=128, dropout=0.1)
+
+x = layers.GlobalAveragePooling1D()(x)
+x = layers.Dense(128, activation='relu')(x)
+x = layers.Dropout(0.2)(x)
+x = layers.Dense(64, activation='relu')(x)
+output = layers.Dense(1)(x)
+
+model = Model(inputs=input_layer, outputs=output)
+
+# --- Compile ---
+model.compile(optimizer=Adam(learning_rate=0.001), loss='mse')
+
+# --- Train ---
+history = model.fit(
+    X_train, y_train,
+    validation_split=0.1,
+    epochs=40,
+    batch_size=64,
+    verbose=1
+)
+
+# --- Predict ---
+y_pred = model.predict(X_test)
+
+# --- Evaluate ---
+r2 = r2_score(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+
+print(f"✅ R²: {r2:.4f}")
+print(f"MAE: {mae:.4f}")
+print(f"RMSE: {rmse:.4f}")
