@@ -1,236 +1,166 @@
-🌿 Air Quality Prediction using Deep Learning
+* 🌫️ Multi-Station Air Quality Prediction using Deep Learning
+* **Project Overview**
 
-This project focuses on **predicting Air Quality Index (AQI)** using **deep learning models**. By analyzing key environmental parameters such as temperature, humidity, CO, NO₂, and PM2.5 levels, the model learns to forecast air quality trends — helping detect pollution risks early and promote healthier living environments.
+This project focuses on hourly air quality prediction using deep learning and hybrid optimization techniques across multiple monitoring stations.
 
----
+To ensure a fair and scientific evaluation, existing state-of-the-art models from prior research were first reproduced and tested. Based on their limitations, an improved Hybrid AOAOA-Optimized Bi-LSTM model with advanced feature extraction was proposed.
 
-## 🚀 Features
+* **📚 Baseline Methods (From Literature)**
 
-- Predicts **Air Quality Index (AQI)** using sensor/environmental data  
-- Implements **deep learning algorithms** (ANN, CNN, or LSTM depending on data type)  
-- Supports **data preprocessing, normalization, and visualization**  
-- Generates **pollution level classification** (Good, Moderate, Unhealthy, etc.)  
-- Can be integrated with **IoT-based air monitoring systems**
+Before proposing our model, we implemented and evaluated the methods reported in prior research, following their original architectures and training strategies.
 
----
+**Methods Reproduced from Literature:**
 
-## 🧠 Project Overview
+Bi-LSTM
 
-The increasing rate of air pollution worldwide makes AQI forecasting critical for public health and smart city applications.  
-This project uses deep learning techniques to:
-1. Learn from historical air quality datasets  
-2. Predict future AQI values  
-3. Identify pollution severity categories  
+CNN + LSTM
 
----
+Attention-based LSTM
 
-## 🗂️ Dataset
+GRU
 
-You can use publicly available datasets such as:
-- [UCI Machine Learning Repository - Air Quality Dataset](https://archive.ics.uci.edu/ml/datasets/Air+Quality)
-- [OpenAQ API](https://openaq.org)
-- [Kaggle - Air Quality Data in India or Global Cities](https://www.kaggle.com/datasets)
-- https://data.mendeley.com/datasets/bzhzr9b64v/1
+Transformer Encoder
 
-**Typical features include:**
-- PM2.5, PM10  
-- CO, NO₂, SO₂, O₃  
-- Temperature, Humidity, Wind Speed  
-- Date & Time  
+These methods were directly inspired by and adapted from the following reference paper:
 
----
+[[1] Author(s), “Efficient multi-station air quality prediction in Delhi with wavelet and optimization-based models,” plosone, 2025.](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0330465)
 
-## ⚙️ Tech Stack
+📌 The architectures and training procedures of these models were implemented according to the methodology described in the above paper to ensure reproducibility and fair comparison.
 
-- **Language:** Python 🐍  
-- **Libraries:** TensorFlow / Keras, Pandas, NumPy, Matplotlib, Scikit-learn  
-- **Environment:** Jupyter Notebook or VS Code  
+* **🧪 Models Implemented**
 
----
+The following models were implemented and compared:
 
-# PM2.5 Forecasting Project — README
+Bi-LSTM (Baseline from Literature)
 
-**What this README contains**
+CNN + LSTM (Literature-Inspired)
 
-* A concise summary of every model you trained
-* The important plots to include in your presentation and their recommended filenames
-* Code snippets to save each plot at high quality
-* Run / reproducibility instructions and environment dependencies
-* Suggested slide order and figure captions
+Attention-Based LSTM
 
----
+GRU
 
-# Project overview
+Transformer Encoder
 
-This project predicts **PM2.5** using an integrated air-quality dataset (`Integrated_AQI_Data.csv`) with features such as `PM10, AT (air temperature), BP, SR, RH, WS, WD, NO, NO2, SO2, Ozone, CO, Benzene, NH3, NOx`, plus `year, month, day, hour`.
+* **Proposed Model: Hybrid AOAOA-Optimized Bi-LSTM**
 
-You trained multiple models (deep learning and classical/hybrid). This README lists the key evaluation plots to generate and attach to your report or presentation, plus instructions to save high-quality images for slides.
+🧠 Proposed Model (Final)
+Hybrid AOAOA-Optimized Bi-LSTM
 
----
+The final model improves upon the literature methods by integrating:
 
-# Models included
+Time-frequency analysis
 
-1. **GRU** (baseline)
-2. **GRU + Attention**
-3. **Bidirectional LSTM (BiLSTM)**
-4. **CNN + LSTM**
-5. **Transformer Encoder**
-6. **CNN + GRU (hybrid)**
-7. **Temporal Convolutional Network (TCN)**
-8. **CustomGRU + CustomAttention** (your custom implementation)
+Dimensionality reduction
 
-> Recommendation: use the same train/validation/test splits and the same scaling for all models to ensure fair comparison.
+Meta-heuristic feature selection
 
----
+Processing Pipeline:
 
-# Essential plots (filenames & purpose)
+Min–Max Normalization
 
-Below are the **must-have** plots for every model and a few project-level figures. Save each plot to `figures/` with the filename suggested.
+Wavelet Transform (DB4)
 
-## Per-model plots (for every trained model)
+Principal Component Analysis (PCA)
 
-1. **Training vs Validation Loss (spike graph)**
+Feature Selection using Hybrid Aquila–Arithmetic Optimization (AOAOA)
 
-   * Filename: `figures/{model_name}_train_val_loss.png`
-   * Purpose: show learning dynamics and overfitting/underfitting
-   * Save tip: `plt.savefig('figures/{}_train_val_loss.png'.format(model_name), dpi=300, bbox_inches='tight')`
+Bi-Directional LSTM Prediction
 
-2. **Actual vs Predicted (Scatter + 45° reference)**
+* **🏗️ Model Architecture**
 
-   * Filename: `figures/{model_name}_actual_vs_pred_scatter.png`
-   * Purpose: visual fit; points along diagonal indicate good fit
+Input: Selected Wavelet–PCA features
 
-3. **Time-series: Actual vs Predicted (full test set)**
+Layers:
 
-   * Filename: `figures/{model_name}_timeseries_full.png`
-   * Purpose: show how model captures trends and spikes over time
+Bidirectional LSTM (50 units, return sequences)
 
-4. **Time-series: Zoomed (first 200–300 points)**
+Bidirectional LSTM (50 units)
 
-   * Filename: `figures/{model_name}_timeseries_zoom.png`
-   * Purpose: clearer view for presentation slides
+Dense output layer
 
-5. **Residual Plot (Residuals vs Predicted)**
+Optimizer: Adam
 
-   * Filename: `figures/{model_name}_residuals.png`
-   * Purpose: detect heteroscedasticity or systematic bias
+Loss Function: Mean Squared Error (MSE)
 
-6. **Error Distribution (Histogram of residuals)**
+* **📊 Monitoring Stations**
 
-   * Filename: `figures/{model_name}_error_dist.png`
-   * Purpose: show whether errors are centered around zero and their spread
+The model is evaluated using hourly air quality data from the following stations:
 
-## Project-level / comparative plots
+AshokVihar
 
-1. **Complexity vs Performance**
+DCStadium
 
-   * Filenames: `figures/complexity_vs_r2.png`, `figures/complexity_vs_mae.png`
-   * Purpose: visualize how model complexity relates to performance (R²/MAE)
+DwarkaSec8
 
-2. **Model comparison table / bar chart**
+NehruNagar
 
-   * Filename: `figures/model_comparison_metrics.png`
-   * Purpose: side-by-side R², MAE, RMSE for all models
+Najafgarh
 
-3. **Correlation Heatmap (annotated)**
+Okhla
 
-   * Filename: `figures/correlation_heatmap.png`
-   * Purpose: show feature correlations with PM2.5 and among themselves
+Each station is processed independently to avoid data leakage.
 
-4. **Feature importance / SHAP summary (for XGBoost or deep models)**
+* **📁 Dataset**
 
-   * Filename: `figures/shap_summary.png`
-   * Purpose: explain which features drive predictions
+The dataset contains hourly air quality measurements including pollutant concentrations and meteorological parameters.
 
-5. **Attention heatmap (for attention-enabled models)**
+Dataset Source:
 
-   * Filename: `figures/{model_name}_attention_heatmap.png`
-   * Purpose: visualize temporal attention weights (how model attends to time steps)
+🔗 [[Dataset Link Here](https://data.mendeley.com/datasets/bzhzr9b64v/1)]
 
-6. **Optional: Confusion matrix on binned categories**
+Dataset Format:
+feature_1, feature_2, ..., feature_n, target
 
-   * Filename: `figures/confusion_binned.png`
-   * Purpose: if you convert PM2.5 into categories (Good/Moderate/Severe), show classification confusion
 
----
+Features: PM2.5, PM10, NO₂, SO₂, CO, O₃, etc.
 
+Target: Air quality concentration or AQI
 
+Time Resolution: Hourly
 
+* **📈 Evaluation Metrics**
 
+All models are evaluated using:
 
-# Suggested file structure
+Mean Squared Error (MSE)
 
-```
-project_root/
-├─ data/
-│  └─ Integrated_AQI_Data.csv
-├─ notebooks/
-│  └─ training_and_plots.ipynb
-├─ scripts/
-│  ├─ train_gru.py
-│  ├─ train_transformer.py
-│  └─ make_plots.py
-├─ models/
-│  └─ saved_model_{model_name}.h5
-├─ figures/
-│  └─ (all .png files generated here)
-└─ README.md
-```
+Mean Absolute Error (MAE)
 
----
+Root Mean Squared Error (RMSE)
 
-# Quick reproduce steps
+R² Score
 
-1. Create `figures/` directory next to your notebook or script: `mkdir figures`
-2. Train each model (or load saved weights) using the same preprocessing pipeline.
-3. After each model training, run the plotting cells to generate and save the figures listed above.
+* **🔬 Experimental Findings**
 
----
+Literature models perform well but struggle with feature redundancy and noise
 
-# Environment & dependencies
+Transformer requires large datasets for stable performance
 
-Minimum recommended environment (try to match your training environment):
+GRU is efficient but slightly less accurate
 
-```bash
-pip install numpy pandas scikit-learn matplotlib seaborn tensorflow==2.12.0 keras-tcn keras shap xgboost
-```
+Proposed AOAOA-Bi-LSTM consistently achieves the best accuracy across stations
 
-Notes:
+* **🚀 Key Contributions**
 
-* If you use SHAP or `keras-tcn` install them separately; `keras-tcn` is optional if you use the pure-TensorFlow TCN implementation.
-* Use the same TensorFlow major version you used for training to avoid saved-model incompatibilities.
+Reproduction of state-of-the-art air quality prediction models
 
----
+Hybrid optimization-based feature selection
 
-# Suggested captions and slide order
+Wavelet-driven temporal analysis
 
-1. **Dataset overview** — (table snapshot + correlation heatmap) `figures/correlation_heatmap.png`.
-2. **Feature engineering** — describe lag creation and scaling.
-3. **Model list & architecture** — small diagram for each model.
-4. **Training dynamics** — (one slide per model or grouped) `*_train_val_loss.png`.
-5. **Prediction quality** — `*_actual_vs_pred_scatter.png` + `*_timeseries_zoom.png`.
-6. **Residual analysis** — `*_residuals.png` and `*_error_dist.png`.
-7. **Model comparison** — `model_comparison_metrics.png` + `complexity_vs_r2.png`.
-8. **Explainability** — `shap_summary.png` and `attention_heatmap.png`.
-9. **Conclusion & future work** — short bullets.
+Robust multi-station forecasting framework
 
----
+* **🧩 Applications**
 
-# Helpful tips & best practices
+Smart city air monitoring systems
 
-* **Use the same test set** for final evaluation across all models — this ensures fairness.
-* **Save random seeds** for reproducibility: `np.random.seed(...)`, `tf.random.set_seed(...)`.
-* **Use sample windows** (first 200–300 points) for slide visuals so plots are legible.
-* **Add 45° reference line** to actual vs predicted scatter plots to make fit obvious.
-* **Check residuals** for autocorrelation—if present, consider adding lag features or ensembling.
+Environmental decision support
 
----
+Public health risk analysis
 
-# If you want, I can:
+Pollution control policy planning
 
-* generate a `make_plots.py` script that automatically loads saved model outputs and writes every figure to `figures/` (I can create this file for you),
-* produce a slide-ready PDF layout with the key figures placed in order,
-* or add pre-written slide text for each figure.
 
-Tell me which of these you want next.
-
+* **⚙️ How to Run**
+pip install numpy pandas scikit-learn tensorflow pywavelets
+python main.py
